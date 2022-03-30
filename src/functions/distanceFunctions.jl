@@ -1,4 +1,26 @@
 #############################################################
+############ MoM Distance
+
+function dist(
+    data::AbstractVector{T}
+) where {T<:Union{Tuple{Vararg{<:Real}},Vector{<:Real}}}
+
+    Xq = [data]
+
+    trees = [KDTree(reduce(hcat, xq), leafsize = 1) for xq in Xq]
+
+    return DistanceFunction(
+        k = 1,
+        trees = trees,
+        X = Xq,
+        type = "dist",
+        Q = 1
+    )
+end
+
+
+
+#############################################################
 ############ DTM
 
 
@@ -69,7 +91,7 @@ function momdist(
         k = 1,
         trees = trees,
         X = Xq,
-        type = "momdtm",
+        type = "momdist",
         Q = Q
     )
 end
