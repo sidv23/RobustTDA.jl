@@ -1,4 +1,4 @@
-![](examples/logo-main.png | width=100)
+[[examples/logo-main.png|width=100px]]
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://sidv23.github.io/RobustTDA.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://sidv23.github.io/RobustTDA.jl/dev)
