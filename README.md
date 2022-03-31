@@ -33,8 +33,14 @@ Generate some data
 using RobustTDA
 using Pipe
 
-signal = randCircle(500, sigma=0.1)
-noise = randUnif(100, a=-2, b=2)
+# Signal from a circle with noise
+signal = 2 .* randCircle(500, sigma = 0.05)
+
+# Outliers from a Matérn cluster process
+win = (-1, 1, -1, 1)
+noise = randMClust(100, window = win, λ1 = 2, λ2 = 10, r = 0.05)
+
+X = [signal; noise]
 points = [signal; noise]
 scatter(points)
 ```
@@ -48,12 +54,16 @@ Xn = [[x...] for x in points]
 <sub><sup>*All rountines in the package currently read the input point-cloud data as a vector of vectors</sub></sup>
 
 
+```julia
+plt = f -> plot(xseq, yseq, (x,y) -> RobustTDA.fit([[x,y]],f), st=:surface)
+```
+
 Construct a filter function from the samples $\mathbb{X}_n$. For example,
 
 1. Vanilla Distance function:
     ```julia
         f_dist = dist(Xn)
-
+        plot(-3:0.1:3, -3:0.1:3, (x,y) -> RobustTDA.fit([[x,y]],f_dist), st=:surface)
         # RobustTDA.DistanceFunction
         # k: Int64 1
         # trees: Array{KDTree{StaticArrays.SVector{2, Float64}, Euclidean, Float64}}((1,))
@@ -61,18 +71,8 @@ Construct a filter function from the samples $\mathbb{X}_n$. For example,
         # type: String "dist"
         # Q: Int64 1
     ```
-2. Median-of-means Distance Function:
-   ```julia
-        f_momdist = momdist(Xn, 201)
-
-        # RobustTDA.DistanceFunction
-        # k: Int64 1
-        # trees: Array{KDTree{StaticArrays.SVector{2, Float64}, Euclidean, Float64}}((201,))
-        # X: Array{SubArray{Vector{Float64}, 1, Vector{Vector{Float64}}, Tuple{Vector{Int64}}, false}}((201,))
-        # type: String "momdist"
-        # Q: Int64 201
-    ```
-3. Distance-to-measure:
+    <img src="./docs/src/assets/dist.svg" width=50% align="center">
+2. Distance-to-measure:
     ```julia
         f_dtm = dtm(Xn, 0.1)
 
@@ -83,3 +83,33 @@ Construct a filter function from the samples $\mathbb{X}_n$. For example,
         # type: String "dtm"
         # Q: Int64 1
     ```
+    <img src="./docs/src/assets/dtm.svg" width=50% align="center">
+2. Median-of-means Distance Function:
+   ```julia
+        f_momdist = momdist(Xn, 101)
+
+        # RobustTDA.DistanceFunction
+        # k: Int64 1
+        # trees: Array{KDTree{StaticArrays.SVector{2, Float64}, Euclidean, Float64}}((201,))
+        # X: Array{SubArray{Vector{Float64}, 1, Vector{Vector{Float64}}, Tuple{Vector{Int64}}, false}}((201,))
+        # type: String "momdist"
+        # Q: Int64 201
+    ```
+     <img src="./docs/src/assets/momdist.svg" width=50% align="center">
+Let's pick a single filter function for illustration
+```julia
+f = f_momdist
+
+plot(xseq, yseq, (x,y) -> fit([[x,y]],f), st=:surface, camera=(60,90))
+```
+
+![](docs/src/assets/sublevel.png)
+
+
+For sublevel persistent homology, you need to specify a grid to evaluate the filter functions
+```julia
+    xseq = -3:0.05:3
+    yseq = -3:0.05:3
+    F_grid = [RobustTDA.fit([[x, y]], f) for x in xseq, y in yseq]
+    D = F_grid |> Cubical |> ripserer
+```
