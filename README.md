@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/src/assets/logo1.png" alt="RobustTDA.jl" width="480">
+  <img src="docs/src/assets/logo.svg" alt="RobustTDA.jl" width="480">
 
 _Robust Topological Data Analysis in Julia._
 

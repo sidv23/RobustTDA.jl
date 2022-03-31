@@ -40,7 +40,7 @@ begin
 end
 
 begin
-    t = 0.35
+    t = 0.4
     p = 1
     B1 = Balls(X1, rfx.(t, w1, p))
     B2 = Balls(X2, rfx.(t, w2, p))
@@ -54,8 +54,10 @@ begin
     plt = @pipe B1 |> plot(plt, _, c=:purple, linealpha=0, alpha=1)
     plt = @pipe B2 |> plot(plt, _, c=:firebrick1, linealpha=0, alpha=1)
     plt = @pipe B3 |> plot(plt, _, c=:green, linealpha=0, alpha=1)
-    scatter!(plt,noise, ratio=1, axis=false, grid=false, label=false, ticks=false, markersize=2, c=:black)
-    scatter!(X_signal, ratio=1, axis=false, grid=false, label=false, ticks=false, markersize=2, c=:black)
+    scatter!(plt,noise, ratio=1, axis=false, grid=false, label=false, ticks=false, markersize=2, c=:gray)
+    scatter!(X_signal, ratio=1, axis=false, grid=false, label=false, ticks=false, markersize=2, c=:gray)
 end
 
-savefig("./examples/logo.pdf")
+plot(plt, background_color = :transparent, foreground_color=:black)
+
+savefig("./examples/logo.svg")
