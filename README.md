@@ -63,7 +63,8 @@ Construct a filter function from the samples $\mathbb{X}_n$. For example,
 1. Vanilla Distance function:
     ```julia
         f_dist = dist(Xn)
-        plot(-3:0.1:3, -3:0.1:3, (x,y) -> RobustTDA.fit([[x,y]],f_dist), st=:surface)
+        plt(f_dist)
+        
         # RobustTDA.DistanceFunction
         # k: Int64 1
         # trees: Array{KDTree{StaticArrays.SVector{2, Float64}, Euclidean, Float64}}((1,))
@@ -75,6 +76,7 @@ Construct a filter function from the samples $\mathbb{X}_n$. For example,
 2. Distance-to-measure:
     ```julia
         f_dtm = dtm(Xn, 0.1)
+        plt(f_dtm)
 
         # RobustTDA.DistanceFunction
         # k: Int64 60
@@ -87,6 +89,7 @@ Construct a filter function from the samples $\mathbb{X}_n$. For example,
 2. Median-of-means Distance Function:
    ```julia
         f_momdist = momdist(Xn, 101)
+        plt(f_momdist)
 
         # RobustTDA.DistanceFunction
         # k: Int64 1
@@ -96,14 +99,7 @@ Construct a filter function from the samples $\mathbb{X}_n$. For example,
         # Q: Int64 201
     ```
      <img src="./docs/src/assets/momdist.svg" width=50% align="center">
-Let's pick a single filter function for illustration
-```julia
-f = f_momdist
 
-plot(xseq, yseq, (x,y) -> fit([[x,y]],f), st=:surface, camera=(60,90))
-```
-
-![](docs/src/assets/sublevel.png)
 
 
 For sublevel persistent homology, you need to specify a grid to evaluate the filter functions
