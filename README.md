@@ -45,7 +45,7 @@ points = [signal; noise]
 scatter(points)
 ```
 
-![Points](docs/src/assets/points.png)
+![Points](docs/src/assets/points.svg)
 
 First, convert the data to a vector-format, i.e.,
 ```julia
