@@ -7,6 +7,7 @@ using Random
 using Distributions
 using Plots
 using Parameters
+using ProgressMeter
 using Distances
 using LinearAlgebra
 using Pipe
