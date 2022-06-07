@@ -47,7 +47,7 @@ function rkde_loss(X, k::Kernel, fun::T, w = nothing) where {T<:Function}
 end
 
 
-function rkde_w(w, X, k::Kernel; loss::T, ϕ, tolerance=1e-10) where {T<:Function}
+function rkde_w(w, X, k::Kernel; loss::T, ϕ, tolerance=1e-10, message=false) where {T<:Function}
     L_old = rkde_loss(X, k, loss)
     ratio = 1
     iter = 0
@@ -63,7 +63,9 @@ function rkde_w(w, X, k::Kernel; loss::T, ϕ, tolerance=1e-10) where {T<:Functio
         L_old = L_new
         iter = iter + 1
 
-        println("iter = $iter, ratio=$ratio")
+        if message
+            println("iter = $iter, ratio=$ratio")
+        end
 
     end
 
