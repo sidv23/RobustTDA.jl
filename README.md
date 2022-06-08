@@ -121,7 +121,7 @@ The code accompanying the paper ![`Robust Topological Inference in the Presence 
 # Citation
 
     @article{
-        vishwanath2020statistical,
+        vishwanath2022momdist,
         title = {Robust Topological Inference in the Presence of Outliers},
         author = {
             Vishwanath, Siddharth and 
