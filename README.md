@@ -109,3 +109,28 @@ For sublevel persistent homology, you need to specify a grid to evaluate the fil
     F_grid = [RobustTDA.fit([[x, y]], f) for x in xseq, y in yseq]
     D = F_grid |> Cubical |> ripserer
 ```
+
+
+# MoM Dist
+
+The code accompanying the paper ![`Robust Topological Inference in the Presence of Outliers`](https://arxiv.org/abs/2206.01795), and for computing **MoMDist**-weighted filtrations please see the ![**MoMDist** repository](https://github.com/sidv23/momdist)
+
+    https://github.com/sidv23/momdist
+
+
+# Citation
+
+    @article{
+        vishwanath2020statistical,
+        title = {Robust Topological Inference in the Presence of Outliers},
+        author = {
+            Vishwanath, Siddharth and 
+            Sriperumbudur, Bharath K. and 
+            Fukumizu, Kenji and 
+            Kuriki, Satoshi
+        },
+        journal={arXiv preprint arXiv:2206.01795},
+        year = {2022}
+        keywords = {62R40, 55N31, 68T09},
+        url = {https://arxiv.org/abs/2206.01795},
+    }
