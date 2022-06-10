@@ -38,6 +38,13 @@ end
 
 ############################################################
 # MATÉRN CLUSTER
+# 
+# The following code is taken as is from H. Paul Keeler's implementation of the
+# Matérn cluster process in Julia. All credit goes to Paul.
+# See: 
+#   https://hpaulkeeler.com/simulating-a-matern-cluster-point-process/
+#   https://github.com/hpaulkeeler/posts/blob/master/TestingJulia/MaternClusterRectangle.jl
+# 
 
 
 function randMClust(n; window = (-1, 1, -1, 1), λ1 = 5, λ2 = 5, r = 0.1)
