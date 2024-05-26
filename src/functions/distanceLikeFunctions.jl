@@ -89,6 +89,8 @@ function optima_for_kPDTM(X, q, k, sig, iter_max=10, nstart=1)
 end
 
 function kPDTM(X, query_pts, q, k, sig, iter_max=10, nstart=1)
+    X = permutedims(hcat(X...))
+    query_pts = permutedims(hcat(query_pts...))
     n, dx = size(X)
     _, dq = size(query_pts)
 

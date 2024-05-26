@@ -89,7 +89,7 @@ end
 @testset "kPDTM" begin
     q, k, sig = 40, round(Int, N/2), round(Int, N/2)
     iter_max, nstart = 100, 2
-    kPDTM_values, centers, _, _, colors, cost = rtda.kPDTM(X, X, q, k, sig, iter_max, nstart)
+    kPDTM_values, centers, _, _, colors, cost = rtda.kPDTM(Xn, Xn, q, k, sig, iter_max, nstart)
     @test typeof(kPDTM_values) == Vector{Float64}
     @test typeof(centers) == Matrix{Float64}
     @test typeof(colors) == Vector{Float64}
