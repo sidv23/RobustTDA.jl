@@ -12,7 +12,6 @@ using Distances
 using LinearAlgebra
 using Pipe
 using Statistics
-using RCall
 using Ripserer
 using LazySets
 using PersistenceDiagrams
@@ -21,7 +20,6 @@ using PersistenceDiagramsBase
 using Markdown
 using KernelFunctions
 using MLDataUtils
-using Roots
 using LambertW
 
 import Base: log
@@ -48,6 +46,7 @@ export randCircle,
     momdist,
     bandwidth_select,
     fit,
+    kPDTM,
     test,
     surfacePlot,
     rkde,

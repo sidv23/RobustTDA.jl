@@ -101,7 +101,8 @@ end
 
 
 function fit(x; X, w, k::Kernel)
-    return (kernelmatrix(k, x, X)*w)[1]
+    dists = sqrt.(k(0, 0) .- sum(kernelmatrix(k, x, X) .* w', dims=2))
+    return [dists...]
 end
 
 function rkde_fit(G; X, w, k::Kernel)

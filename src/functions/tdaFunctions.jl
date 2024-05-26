@@ -8,7 +8,7 @@ function bandwidth_select(Xn, k)
     end
 
     kdtree = KDTree(reduce(hcat, Xn), leafsize = 1)
-    knns = [knn(kdtree, Xn[i], k)[2] |> maximum for i = 1:length(Xn)]
+    knns = [knn(kdtree, Xn[i], k)[2] |> maximum for i = eachindex(Xn)]
     return median(knns)
 end
 
@@ -39,8 +39,8 @@ end
 
 function convert_radius(rad, k)
 
-    # r0 = find_zero(t -> dH(k)(0, t) - rad, 0., atol=eps(1.))
-    # r0 = find_zero(t -> dH(k)(0, t) - rad, 0., rtol=1e-10)
+    # r0 = Roots.find_zero(t -> dH(k)(0, t) - rad, 0., atol=eps(1.))
+    # r0 = Roots.find_zero(t -> dH(k)(0, t) - rad, 0., rtol=1e-10)
     t0 = (2 - ((rad)^2)) / 2
     scale = 1 / (k.transform.s...)
 

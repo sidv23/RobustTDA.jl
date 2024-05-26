@@ -105,7 +105,6 @@ function fit(
     x::AbstractVecOrMat,
     D::DistanceFunction
 )
-
     @unpack k, trees, X, type, Q = D
 
     if length(X[1]) < k
@@ -113,7 +112,7 @@ function fit(
     end
 
     fit = []
-    for j ∈ 1:length(x)
+    for j ∈ eachindex(x)
         push!(fit,
             [knn(trees[i], x[j], k)[2] |> maximum for i = 1:Q]
         )
