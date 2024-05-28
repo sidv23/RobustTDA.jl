@@ -103,7 +103,7 @@ function kPDTM(X, query_pts, q, k, sig, iter_max=10, nstart=1)
     end
 
     centers, means, variances, colors, cost = optima_for_kPDTM(X, q, k, sig, iter_max, nstart)
-    kPDTM_result = [minimum(sum((reshape(X, (:, 1, 2)) .- reshape(means, (1, :, 2))) .^ 2, dims=3) .+ reshape(variances, (1, :)), dims=2)...] .|> sqrt
+    kPDTM_result = [minimum(sum((reshape(X, (:, 1, dx)) .- reshape(means, (1, :, dx))) .^ 2, dims=3) .+ reshape(variances, (1, :)), dims=2)...] .|> sqrt
 
 
     return kPDTM_result, centers, means, variances, colors, cost

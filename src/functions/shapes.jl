@@ -52,3 +52,11 @@ function randMClust(n; a=1, b=1, λ_parent=5, λ_child=5, r=0.1)
     Xn = permutedims(hcat(rand(eachrow(X_child), n)...))
     return Xn
 end
+
+############################################################
+# sample points from the line y = mx + c from x_min to x_max
+function randLine(n::Int; m = 1, c = 0, x_min = 0, x_max = 1)
+    x = rand(Uniform(x_min, x_max), n)
+    y = m .* x .+ c
+    return hcat(x, y)
+end

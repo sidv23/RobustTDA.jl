@@ -88,6 +88,7 @@ end
 
 @testset "kPDTM" begin
     q, k, sig = 40, round(Int, N/2), round(Int, N/2)
+    Xn .= map(x -> [x...; 0.0], Xn)
     iter_max, nstart = 100, 2
     kPDTM_values, centers, _, _, colors, cost = rtda.kPDTM(Xn, Xn, q, k, sig, iter_max, nstart)
     @test typeof(kPDTM_values) == Vector{Float64}
