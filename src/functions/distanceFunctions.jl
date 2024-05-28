@@ -111,11 +111,15 @@ function fit(
         k = ([ length(y) for y in X ] |> minimum)
     end
 
-    fit = []
-    for j ∈ eachindex(x)
-        push!(fit,
-            ThreadsX.collect(maximum(knn(trees[i], x[j], k)[2]) for i = 1:Q)
-        )
-    end
-    return reduce(vcat, median.(fit))
+    xq = hcat(x...)
+    dists = ThreadsX.collect(knn(tree, xq, k)[2] .|> mean for tree in trees)
+    dists = reduce(hcat, dists)
+    return median.(eachrow(dists))
+    # fit = []
+    # for j ∈ eachindex(x)
+    #     push!(fit,
+    #         ThreadsX.collect(maximum(knn(trees[i], x[j], k)[2]) for i = 1:Q)
+    #     )
+    # end
+    # return reduce(vcat, median.(fit))
 end
