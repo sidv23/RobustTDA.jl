@@ -83,9 +83,9 @@ function momdist(
         Q = ceil(Int16, length(data) / 5)
     end
 
-    Xq = [fold[2] for fold in kfolds(shuffleobs(data), Q)]
+    Xq = ThreadsX.collect(fold[2] for fold in kfolds(shuffleobs(data), Q))
 
-    trees = [KDTree(reduce(hcat, xq), leafsize = 1) for xq in Xq]
+    trees = ThreadsX.collect(KDTree(reduce(hcat, xq), leafsize=1) for xq in Xq)
 
     return DistanceFunction(
         k = 1,
@@ -114,7 +114,7 @@ function fit(
     fit = []
     for j ∈ eachindex(x)
         push!(fit,
-            [knn(trees[i], x[j], k)[2] |> maximum for i = 1:Q]
+            ThreadsX.collect(maximum(knn(trees[i], x[j], k)[2]) for i = 1:Q)
         )
     end
     return reduce(vcat, median.(fit))

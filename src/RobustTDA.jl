@@ -21,6 +21,7 @@ using Markdown
 using KernelFunctions
 using MLDataUtils
 using LambertW
+using ThreadsX
 
 import Base: log
 
