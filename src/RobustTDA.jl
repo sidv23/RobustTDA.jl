@@ -4,20 +4,20 @@ module RobustTDA
 
 # Dpendencies
 using Random
+using LinearAlgebra
 using Distributions
-using Plots
+# using Plots
 using Parameters
 using ProgressMeter
 using Distances
-using LinearAlgebra
 using Pipe
 using Statistics
 using Ripserer
-using LazySets
+# using LazySets
 using PersistenceDiagrams
 using NearestNeighbors
-using PersistenceDiagramsBase
-using Markdown
+# using PersistenceDiagramsBase
+# using Markdown
 using KernelFunctions
 using MLDataUtils
 using LambertW
@@ -58,7 +58,7 @@ export randCircle,
 include("structures.jl")
 include("functions/shapes.jl")
 include("functions/helperFunctions.jl")
-include("functions/plotFunctions.jl")
+# include("functions/plotFunctions.jl")
 include("functions/distanceFunctions.jl")
 include("functions/distanceLikeFunctions.jl")
 include("functions/tdaFunctions.jl")
