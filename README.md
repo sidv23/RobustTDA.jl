@@ -31,16 +31,16 @@ Generate some data
 
 ```julia
 using RobustTDA
+import RobustTDA as rtda
 using Pipe
 
 # Signal from a circle with noise
-signal = 2 .* randCircle(500, sigma = 0.05)
+signal = 2 .* rtda.randCircle(500, sigma = 0.05)
 
 # Outliers from a Matérn cluster process
 win = (-1, 1, -1, 1)
-noise = randMClust(100, window = win, λ1 = 2, λ2 = 10, r = 0.05)
+noise = rtda.randMClust(m, a=1, b=1, λ_parent=2, λ_child=100, r=0.1)
 
-X = [signal; noise]
 points = [signal; noise]
 scatter(points)
 ```

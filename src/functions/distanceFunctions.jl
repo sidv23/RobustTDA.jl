@@ -29,7 +29,7 @@ function dtm(
     m::Real
 ) where {T<:Union{Tuple{Vararg{<:Real}},Vector{<:Real}}}
 
-    tree = BruteTree(reduce(hcat, data), leafsize = 1)
+    tree = KDTree(reduce(hcat, data), leafsize=1)
 
     return DistanceFunction(
         k = floor(Int, m * length(data)),
