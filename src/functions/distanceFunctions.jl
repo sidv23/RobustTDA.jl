@@ -159,6 +159,105 @@ function momdist(
     )
 end
 
+"""
+    parallel_momdist(X)
+
+Computes the Median of Means (MoM) distance metric in parallel using multiple worker processes.
+
+# Arguments
+- `X::AbstractMatrix`: The dataset for which the Median of Means (MoM) distance is to be computed.
+
+# Returns
+- `DistanceFunction`: A custom distance function object containing:
+  - `k`: The number of nearest neighbors (fixed at 1).
+  - `trees`: A collection of trees built on different folds of `X` for parallel computation.
+  - `X`: The original dataset wrapped in an array.
+  - `type`: A string indicating the type of distance function (`"momdist"`).
+  - `Q`: The number of worker processes used for parallel computation.
+
+# Description
+This function partitions the dataset `X` into `m` folds (where `m` is the number of available worker 
+processes), builds a tree structure for each partition in parallel using `pmap`, and returns a 
+distance function object. The Median of Means (MoM) method enhances robustness by splitting the dataset 
+into multiple groups, computing the mean within each, and using the median of these means to reduce the 
+impact of outliers.
+
+# Example
+```julia
+using Distributed
+
+addprocs(4)  # Add worker processes for parallel computation
+
+X = rand(100, 2)  # Generate a dataset with 100 points in 2D space
+momdist_func = parallel_momdist(X)  # Compute parallel Median of Means distance metric
+```
+"""
+function parallel_momdist(X)
+    m = nworkers()
+    Xq = collect(reduce(hcat, fold[2]) for fold in kfolds(shuffleobs(X), m))
+    trees = pmap(make_tree, Xq)
+    return DistanceFunction(
+        k=1,
+        trees=trees,
+        X=[X],
+        type="momdist",
+        Q=m
+    )
+end
+
+"""
+    make_tree(x)
+
+Constructs a KDTree from the given data `x` with a leaf size of 1. This is a setup function for the `parallel_momdist` function.
+
+# Arguments
+- `x`: A collection of points (e.g., an array of coordinates) to build the KDTree.
+
+# Returns
+- A `KDTree` instance with the given data.
+
+# Example
+```julia
+using Distributed
+@everywhere using RobustTDA
+points = rand(2, 10)  # 10 points in 2D space
+tree = make_tree(points)
+```
+
+# Notes
+In a general sense, just ensuring that the package is defined everywhere is enough for `parallel_momdist`.
+"""
+function make_tree(x)
+    return KDTree(x, leafsize=1)
+end
+
+"""
+    tree_dist(tree, X)
+
+Computes the distance from each point in `X` to its nearest neighbor in the given `KDTree`. This is a helper function for `parallel_momdist`. 
+
+# Arguments
+- `tree`: A `KDTree` instance (from `NearestNeighbors.jl`).
+- `X`: A collection of query points, typically an array where each column represents a point.
+
+# Returns
+- A flattened vector of nearest neighbor distances for each point in `X`.
+
+# Example
+```julia
+using NearestNeighbors
+
+points = rand(2, 10)  # 10 points in 2D space
+query_points = rand(2, 5)  # 5 query points
+
+tree = KDTree(points)
+distances = tree_dist(tree, query_points)
+```
+"""
+function tree_dist(tree, X)
+    return knn(tree, X, 1)[2] |> Base.Flatten |> collect
+end
+
 
 #############################################################
 ############ Fit for Distance Functions
@@ -207,4 +306,31 @@ function fit(
     #     )
     # end
     # return reduce(vcat, median.(fit))
+end
+
+"""
+    parallel_fit(X, df)
+
+Computes the median of nearest neighbor distances using multiple KDTree structures in parallel.
+
+# Arguments
+- `X`: A vector of data points, where each point is a vector.
+- `df`: A `DistanceFunction` object containing multiple KDTree structures.
+
+# Returns
+- A column vector where each entry represents the median nearest neighbor distance for a data point.
+
+# Example
+```julia
+using NearestNeighbors
+
+X = [rand(2) for _ in 1:100]  # 100 points in 2D
+df = parallel_momdist(X)  # Create distance function using KDTree
+distances = parallel_fit(X, df)  # Compute median nearest neighbor distances
+```
+"""
+function parallel_fit(X, df)
+    X_mat = reduce(hcat, X)
+    dists = hcat(pmap(tree -> tree_dist(tree, X_mat), df.trees)...)
+    return median(dists, dims=2)
 end

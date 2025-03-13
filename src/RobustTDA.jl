@@ -6,6 +6,7 @@ module RobustTDA
 using Random
 using LinearAlgebra
 using Distributions
+using Distributed
 # using Plots
 using Parameters
 using ProgressMeter
