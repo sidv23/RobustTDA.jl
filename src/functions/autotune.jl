@@ -1,3 +1,32 @@
+"""
+    lepski(Xn, params::lepski_params)
+
+Implements Lepski's adaptive selection procedure to determine an optimal parameter `m` for estimation.
+
+# Arguments
+- `Xn`: A dataset represented as an array.
+- `params::lepski_params`: A structure containing the following parameters:
+    - `a`: A constant used in the function `h`.
+    - `b`: A constant exponent in the function `h`.
+    - `mmin`: The minimum value of `m`.
+    - `mmax`: The maximum value of `m`.
+    - `pi`: A constant used for generating values of `m`.
+    - `δ`: A probability threshold.
+
+# Returns
+- The optimal value of `m` selected by Lepski's principle.
+
+# Description
+This function iteratively computes persistence diagrams for different values of `m` and selects the best one using the Bottleneck distance criterion. It constructs a sequence of values for `m` based on geometric scaling and evaluates differences between persistence diagrams to find the smallest `m` where the difference falls below a threshold. The function utilizes progress tracking and garbage collection to optimize performance.
+
+# Example Usage
+```julia
+params = lepski_params(a=1.0, b=0.5, mmin=5, mmax=100, pi=1.5, δ=0.05)
+Xn = rand(100)  # Example dataset
+optimal_m = lepski(Xn, params)
+println("Optimal m: ", optimal_m)
+```
+"""
 function lepski(; Xn, params::lepski_params)
 
     p = 1
@@ -12,7 +41,7 @@ function lepski(; Xn, params::lepski_params)
     M = [round(Int, mmin * pi^j) for j in 1:1:floor(Int, log(pi, mmax / mmin))] |> unique
     Q = [2 * m + 1 for m in M]
     J = length(M)
-    D = @showprogress "Computing Dgms" [@pipe q .|> momdist(Xn, _) .|> fit(Xn, _) .|> wrips(Xn, w = _, p = 1) for q in Q]
+    D = @showprogress "Computing Dgms" [@pipe q .|> momdist(Xn, _) .|> fit(Xn, _) .|> wrips(Xn, w=_, p=1) for q in Q]
 
     jhat = J
 
@@ -25,8 +54,8 @@ function lepski(; Xn, params::lepski_params)
         for i in (j+1):J
             # Di = @pipe Q[i] |>    momdist(Xn, _) |> fit(Xn, _) |> wrips(Xn, w = _, p = 1)
             # flag = Bottleneck()(Di, Dj) > 2 * h(n, M[i])
-            
-            
+
+
             flag = Bottleneck()(D[i][1], D[j][1]) ≤ 2 * h(n, M[i], δ)
             # flag = Bottleneck()(D[i], D[j]) ≤ 2 * h(n, M[i], δ)
             next!(prog; showvalues=generate_showvalues(j))

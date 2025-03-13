@@ -3,8 +3,39 @@ using Random, Distributions
 
 ############################################################
 # LEMNISCATE
-function randLemniscate(n; sigma = 0)
-    t = range(0, 2π, length = n)
+"""
+    randLemniscate(n; sigma=0)
+
+Generates `n` random points along a lemniscate-shaped curve with optional Gaussian noise.
+
+# Arguments
+- `n::Int`: The number of points to generate.
+- `sigma::Real=0`: The standard deviation of the added Gaussian noise.
+
+# Returns
+- `points::Matrix{Float64}`: An `n × 2` matrix where each row represents a 2D point on the perturbed lemniscate.
+
+# Description
+This function constructs a lemniscate using the parametric equations:
+
+    x = cos(t)
+    y = sin(2t)
+
+where `t` is linearly spaced from `0` to `2π`. Gaussian noise with standard deviation `sigma` is added to simulate variability.
+
+# Example
+```julia
+using Plots
+
+n = 500
+sigma = 0.05
+points = randLemniscate(n, sigma=sigma)
+
+scatter(points[:,1], points[:,2], aspect_ratio=1, label="Noisy Lemniscate")
+```
+"""
+function randLemniscate(n; sigma=0)
+    t = range(0, 2π, length=n)
     signal = hcat(cos.(t), sin.(2t)) .+ randn(n, 2) .* sigma
     noise = randn(n, 2) .* sigma
     return signal .+ noise
@@ -12,8 +43,35 @@ end
 
 ############################################################
 # CIRCLE
-function randCircle(n::Int; sigma = 0)
-    signal = randn(n, 2)  |> (x -> x ./ norm.(eachrow(x)))
+"""
+    randCircle(n::Int; sigma=0)
+
+Generates `n` random points uniformly distributed on a unit circle with optional Gaussian noise.
+
+# Arguments
+- `n::Int`: The number of points to generate.
+- `sigma::Real=0`: The standard deviation of the added Gaussian noise.
+
+# Returns
+- `points::Matrix{Float64}`: An `n × 2` matrix where each row represents a 2D point on the perturbed unit circle.
+
+# Description
+This function first generates `n` points sampled from a standard normal distribution in 2D space.
+Each point is then normalized to lie on the unit circle. Optionally, Gaussian noise with standard deviation `sigma` is added to perturb the points.
+
+# Example
+```julia
+using Plots
+
+n = 500
+sigma = 0.05
+points = randCircle(n, sigma=sigma)
+
+scatter(points[:,1], points[:,2], aspect_ratio=1, label="Noisy Circle")
+```
+"""
+function randCircle(n::Int; sigma=0)
+    signal = randn(n, 2) |> (x -> x ./ norm.(eachrow(x)))
     noise = randn(n, 2) .* sigma
     return signal .+ noise
 end
@@ -21,7 +79,36 @@ end
 
 ############################################################
 # UNIFORM DISTRIBUTION
-function randUnif(n::Int; a = 0, b = 1, d = 2)
+"""
+    randUnif(n::Int; a=0, b=1, d=2)
+
+Generates `n` random points uniformly distributed in a `d`-dimensional space.
+
+# Arguments
+- `n::Int`: The number of points to generate.
+- `a::Real=0`: The lower bound of the uniform distribution.
+- `b::Real=1`: The upper bound of the uniform distribution.
+- `d::Int=2`: The number of dimensions for each generated point.
+
+# Returns
+- `Matrix{Float64}`: An `n × d` matrix where each row represents a `d`-dimensional point sampled from a uniform distribution over `[a, b]`.
+
+# Description
+This function generates `n` points, each with `d` dimensions, by sampling from a uniform distribution `Uniform(a, b)`.
+
+# Example
+```julia
+using Plots, Distributions
+
+n = 1000
+a, b = -1, 1
+d = 2
+points = randUnif(n, a=a, b=b, d=d)
+
+scatter(points[:,1], points[:,2], aspect_ratio=1, label="Uniformly Sampled Points")
+```
+"""
+function randUnif(n::Int; a=0, b=1, d=2)
     return rand(Uniform(a, b), n, d)
 end
 
@@ -35,7 +122,42 @@ end
 #   https://hpaulkeeler.com/simulating-a-matern-cluster-point-process/
 #   https://github.com/hpaulkeeler/posts/blob/master/TestingJulia/MaternClusterRectangle.jl
 # 
+"""
+    randMClust(n; a=1, b=1, λ_parent=5, λ_child=5, r=0.1)
 
+Generates `n` points from a Matérn cluster process within a rectangular region.
+
+# Arguments
+- `n::Int`: The number of points to sample.
+- `a::Real=1`: The width of the rectangular region.
+- `b::Real=1`: The height of the rectangular region.
+- `λ_parent::Real=5`: The intensity (expected number per unit area) of parent points.
+- `λ_child::Real=5`: The expected number of child points per parent.
+- `r::Real=0.1`: The cluster radius, defining the spread of child points around each parent.
+
+# Returns
+- `Matrix{Float64}`: An `n × 2` matrix where each row represents a sampled point.
+
+# Description
+This function simulates a **Matérn cluster process**, a spatial point process where:
+1. Parent points are generated via a **Poisson process** with intensity `λ_parent` over an extended area.
+2. Each parent generates a random number of child points following a **Poisson distribution** with mean `λ_child`.
+3. Child points are placed around the parent following a **radial uniform distribution** within the cluster radius `r`.
+4. A subset of `n` points is randomly selected from the generated child points.
+
+# Example
+```julia
+using Plots
+
+n = 1000
+a, b = 2, 2
+λ_parent, λ_child, r = 5, 10, 0.2
+
+points = randMClust(n, a=a, b=b, λ_parent=λ_parent, λ_child=λ_child, r=r)
+
+scatter(points[:,1], points[:,2], alpha=0.5, aspect_ratio=1, label="Matérn Cluster Process")
+```
+"""
 function randMClust(n; a=1, b=1, λ_parent=5, λ_child=5, r=0.1)
     # Generate n points from a Matérn cluster process with intensity λ_parent and λ_child
     # in a rectangle of dimensions a x b with cluster radius r.
@@ -55,7 +177,38 @@ end
 
 ############################################################
 # sample points from the line y = mx + c from x_min to x_max
-function randLine(n::Int; m = 1, c = 0, x_min = 0, x_max = 1)
+"""
+    randLine(n::Int; m=1, c=0, x_min=0, x_max=1)
+
+Generates `n` random points along a straight line `y = mx + c` with uniformly distributed `x` values.
+
+# Arguments
+- `n::Int`: Number of points to generate.
+- `m::Real=1`: Slope of the line.
+- `c::Real=0`: Intercept of the line.
+- `x_min::Real=0`: Minimum value of `x`.
+- `x_max::Real=1`: Maximum value of `x`.
+
+# Returns
+- `Matrix{Float64}`: An `n × 2` matrix where each row represents a `(x, y)` point on the line.
+
+# Description
+This function generates `n` points where the `x` values are uniformly sampled from `[x_min, x_max]`, and the corresponding `y` values are computed using the equation `y = mx + c`.
+
+# Example
+```julia
+using Plots
+
+n = 100
+x_min = -5
+x_max = 5
+
+points = randLine(n, m=1, c=0, x_min=x_min, x_max=x_max)
+
+scatter(points[:,1], points[:,2], label="Generated Line Points", aspect_ratio=1)
+```
+"""
+function randLine(n::Int; m=1, c=0, x_min=0, x_max=1)
     x = rand(Uniform(x_min, x_max), n)
     y = m .* x .+ c
     return hcat(x, y)
