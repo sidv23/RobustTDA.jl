@@ -53,7 +53,11 @@ export randCircle,
     surfacePlot,
     rkde,
     log,
-    lepski
+    lepski,
+    parallel_momdist,
+    parallel_fit,
+    make_tree,
+    tree_dist
 
 
 include("structures.jl")
