@@ -25,13 +25,9 @@ where `t` is linearly spaced from `0` to `2π`. Gaussian noise with standard dev
 
 # Example
 ```julia
-using Plots
-
 n = 500
 sigma = 0.05
 points = randLemniscate(n, sigma=sigma)
-
-scatter(points[:,1], points[:,2], aspect_ratio=1, label="Noisy Lemniscate")
 ```
 """
 function randLemniscate(n; sigma=0)
@@ -61,13 +57,9 @@ Each point is then normalized to lie on the unit circle. Optionally, Gaussian no
 
 # Example
 ```julia
-using Plots
-
 n = 500
 sigma = 0.05
 points = randCircle(n, sigma=sigma)
-
-scatter(points[:,1], points[:,2], aspect_ratio=1, label="Noisy Circle")
 ```
 """
 function randCircle(n::Int; sigma=0)
@@ -98,14 +90,10 @@ This function generates `n` points, each with `d` dimensions, by sampling from a
 
 # Example
 ```julia
-using Plots, Distributions
-
 n = 1000
 a, b = -1, 1
 d = 2
 points = randUnif(n, a=a, b=b, d=d)
-
-scatter(points[:,1], points[:,2], aspect_ratio=1, label="Uniformly Sampled Points")
 ```
 """
 function randUnif(n::Int; a=0, b=1, d=2)
@@ -147,15 +135,10 @@ This function simulates a **Matérn cluster process**, a spatial point process w
 
 # Example
 ```julia
-using Plots
-
 n = 1000
 a, b = 2, 2
 λ_parent, λ_child, r = 5, 10, 0.2
-
 points = randMClust(n, a=a, b=b, λ_parent=λ_parent, λ_child=λ_child, r=r)
-
-scatter(points[:,1], points[:,2], alpha=0.5, aspect_ratio=1, label="Matérn Cluster Process")
 ```
 """
 function randMClust(n; a=1, b=1, λ_parent=5, λ_child=5, r=0.1)
@@ -197,15 +180,11 @@ This function generates `n` points where the `x` values are uniformly sampled fr
 
 # Example
 ```julia
-using Plots
-
 n = 100
 x_min = -5
 x_max = 5
 
 points = randLine(n, m=1, c=0, x_min=x_min, x_max=x_max)
-
-scatter(points[:,1], points[:,2], label="Generated Line Points", aspect_ratio=1)
 ```
 """
 function randLine(n::Int; m=1, c=0, x_min=0, x_max=1)

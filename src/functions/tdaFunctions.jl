@@ -18,15 +18,11 @@ This function constructs a `KDTree` for efficient nearest neighbor search and co
 
 # Example
 ```julia
-using NearestNeighbors, Random
-
 # Generate random 2D points
 Xn = [rand(2) for _ in 1:100]
 
 # Select bandwidth using 5-nearest neighbors
 bw = bandwidth_select(Xn, 5)
-
-println("Estimated bandwidth: ", bw)
 ```
 """
 function bandwidth_select(Xn, k)
@@ -62,8 +58,6 @@ This function generates `Ball2` objects, which represent balls (discs in 2D, sph
 
 # Example
 ```julia
-using SomeBallLibrary  # Ensure Ball2 is defined
-
 # Define centers
 X = [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0]]
 

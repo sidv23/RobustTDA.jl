@@ -33,7 +33,6 @@ This function partitions the values in `x` into a range that extends slightly be
 x = [1.0, 2.5, 3.8, 5.0]
 range1 = partition(x, n=5)  # Creates 5 partition points
 range2 = partition(x, e=0.5)  # Creates partitions with step size 0.5
-println("Partitioned range: ", range1)
 ```
 """
 function partition(x; n=nothing, e=nothing, kludge=0.2, shift=0)

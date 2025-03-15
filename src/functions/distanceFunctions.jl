@@ -18,7 +18,6 @@ This function builds a k-d tree (`KDTree`) from the input data for efficient nea
 ```julia
 data = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
 distance_func = dist(data)
-println(distance_func)
 ```
 """
 function dist(
@@ -63,7 +62,6 @@ The function builds a `KDTree` from the given data and computes a distance-to-me
 data = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
 m = 0.2
 dtm_func = dtm(data, m)
-println(dtm_func)
 ```
 """
 function dtm(
@@ -133,7 +131,6 @@ This function partitions the dataset into `Q` folds, shuffles the data, and cons
 ```julia
 data = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
 momdist_func = momdist(data, Q=2)
-println(momdist_func)
 ```
 """
 function momdist(
@@ -184,10 +181,8 @@ impact of outliers.
 
 # Example
 ```julia
-using Distributed
-
 addprocs(4)  # Add worker processes for parallel computation
-
+@everywhere using RobustTDA
 X = rand(100, 2)  # Generate a dataset with 100 points in 2D space
 momdist_func = parallel_momdist(X)  # Compute parallel Median of Means distance metric
 ```
@@ -205,55 +200,10 @@ function parallel_momdist(X)
     )
 end
 
-"""
-    make_tree(x)
-
-Constructs a KDTree from the given data `x` with a leaf size of 1. This is a setup function for the `parallel_momdist` function.
-
-# Arguments
-- `x`: A collection of points (e.g., an array of coordinates) to build the KDTree.
-
-# Returns
-- A `KDTree` instance with the given data.
-
-# Example
-```julia
-using Distributed
-@everywhere using RobustTDA
-points = rand(2, 10)  # 10 points in 2D space
-tree = make_tree(points)
-```
-
-# Notes
-In a general sense, just ensuring that the package is defined everywhere is enough for `parallel_momdist`.
-"""
 function make_tree(x)
     return KDTree(x, leafsize=1)
 end
 
-"""
-    tree_dist(tree, X)
-
-Computes the distance from each point in `X` to its nearest neighbor in the given `KDTree`. This is a helper function for `parallel_momdist`. 
-
-# Arguments
-- `tree`: A `KDTree` instance (from `NearestNeighbors.jl`).
-- `X`: A collection of query points, typically an array where each column represents a point.
-
-# Returns
-- A flattened vector of nearest neighbor distances for each point in `X`.
-
-# Example
-```julia
-using NearestNeighbors
-
-points = rand(2, 10)  # 10 points in 2D space
-query_points = rand(2, 5)  # 5 query points
-
-tree = KDTree(points)
-distances = tree_dist(tree, query_points)
-```
-"""
 function tree_dist(tree, X)
     return knn(tree, X, 1)[2] |> Base.Flatten |> collect
 end
@@ -322,8 +272,6 @@ Computes the median of nearest neighbor distances using multiple KDTree structur
 
 # Example
 ```julia
-using NearestNeighbors
-
 X = [rand(2) for _ in 1:100]  # 100 points in 2D
 df = parallel_momdist(X)  # Create distance function using KDTree
 distances = parallel_fit(X, df)  # Compute median nearest neighbor distances

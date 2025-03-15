@@ -25,14 +25,11 @@ This function finds the `q` nearest neighbors of `x` using the provided k-d tree
 
 # Example Usage
 ```julia
-using NearestNeighbors
 X = rand(100, 2)  # 100 points in 2D space
 kdt = KDTree(X')
 x_query = [0.5, 0.5]
 q = 5
 means, vars = mean_var(X, x_query, q, kdt)
-println("Means: ", means)
-println("Variances: ", vars)
 ```
 """
 function mean_var(X, x, q, kdt)
@@ -78,7 +75,6 @@ q = 5
 k = 3
 sig = 10
 centers, means, variances, colors, cost = optima_for_kPDTM(X, q, k, sig)
-println("Optimized Centers: ", centers)
 ```
 """
 function optima_for_kPDTM(X, q, k, sig, iter_max=10, nstart=1)
@@ -192,7 +188,6 @@ q = 5
 k = 3
 sig = 10
 kPDTM_result, centers, means, variances, colors, cost = kPDTM(X, query_pts, q, k, sig)
-println("kPDTM Values: ", kPDTM_result)
 ```
 """
 function kPDTM(X, query_pts, q, k, sig, iter_max=10, nstart=1)

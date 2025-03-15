@@ -128,7 +128,6 @@ This function creates a surface plot of `f(x, y)` over the specified `xseq` and 
 
 # Example Usage
 ```julia
-using Plots
 x = range(-2, 2, length=50)
 y = range(-2, 2, length=50)
 f(x, y) = sin(x) * cos(y)
