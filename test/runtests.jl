@@ -101,18 +101,10 @@ end
 end
 
 @testset "Parallel Functions" begin
-    n, m = 500, 100
-    N = n + m
-    signal = 2 .* rtda.randCircle(n, sigma=0.05)
-    noise = rtda.randMClust(m, a=1, b=1, λ_parent=2, λ_child=100, r=0.1)
-    X = [signal; noise]
-    Xn = [[x...] for x in Tuple.(eachrow(X))]
     @test length(Xn) == 600
-
     addprocs(4)
     @test nworkers() == 4
     @everywhere using RobustTDA
-
     df = parallel_momdist(Xn)
     @test typeof(df) == RobustTDA.DistanceFunction
     res = parallel_fit(Xn, df)
