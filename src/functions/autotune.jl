@@ -21,10 +21,15 @@ This function iteratively computes persistence diagrams for different values of 
 
 # Example Usage
 ```julia
-params = lepski_params(a=1.0, b=0.5, mmin=5, mmax=100, pi=1.5, δ=0.05)
-Xn = rand(100)  # Example dataset
-optimal_m = lepski(Xn, params)
-println("Optimal m: ", optimal_m)
+    θ = rtda.lepski_params(
+        a=0.2,
+        b=1,
+        mmin=50,
+        mmax=200,
+        pi=1.1,
+        δ=0.01
+    )
+    m̂ = rtda.lepski(Xn=Xn, params=θ)
 ```
 """
 function lepski(; Xn, params::lepski_params)

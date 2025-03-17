@@ -6,13 +6,13 @@
 Constructs a distance function based on a k-d tree for efficient nearest neighbor search.
 
 # Arguments
-- `data::AbstractVector{T}`: A collection of points, where each point is either a tuple of real numbers or a vector of real numbers.
+- `data::AbstractVector{T}`: A collection of points, where each point is a vector of real numbers.
 
 # Returns
 - A `DistanceFunction` object that encapsulates the k-d tree and parameters for distance computations.
 
 # Description
-This function builds a k-d tree (`KDTree`) from the input data for efficient nearest-neighbor queries. The resulting `DistanceFunction` is structured to use a single nearest neighbor (`k=1`) and is labeled with `type="dist"`.
+This function builds a k-d tree (`KDTree`) from the input data for efficient nearest-neighbor queries where `k=1`.
 
 # Example Usage
 ```julia
@@ -45,17 +45,17 @@ end
 """
     dtm(data::AbstractVector{T}, m::Real) where {T<:Union{Tuple{Vararg{<:Real}},Vector{<:Real}}}
 
-Constructs a distance-to-measure (DTM) function using a k-d tree for nearest neighbor computations.
+Constructs a k-d tree using the distance-to-measure (DTM) function for nearest neighbor computations.
 
 # Arguments
-- `data::AbstractVector{T}`: A collection of points, where each point is either a tuple of real numbers or a vector of real numbers.
+- `data::AbstractVector{T}`: A collection of points, where each point is a vector of real numbers.
 - `m::Real`: A proportion parameter (between 0 and 1) used to determine the number of neighbors for the DTM computation.
 
 # Returns
-- A `DistanceFunction` object representing the DTM, built using a k-d tree for efficient nearest-neighbor searches.
+- A `DistanceFunction` object representing the k-d tree built using DTM for efficient nearest-neighbor searches.
 
 # Description
-The function builds a `KDTree` from the given data and computes a distance-to-measure function. The number of neighbors used for the computation is determined by `m * length(data)`, rounded down to the nearest integer. The function returns a `DistanceFunction` with `type="dtm"` for further analysis.
+The function builds a `KDTree` from the given data and computes a distance-to-measure function. The number of neighbors used for the computation is determined by `m * length(data)`, rounded down to the nearest integer. The function returns a `DistanceFunction` with `type="dtm"`.
 
 # Example Usage
 ```julia
@@ -118,11 +118,11 @@ end
 Constructs a median-of-means distance function using k-d trees for robust nearest neighbor computations.
 
 # Arguments
-- `data::AbstractVector{T}`: A collection of points, where each point is either a tuple of real numbers or a vector of real numbers.
-- `Q::Int` (optional): The number of partitions (folds) for the median-of-means method. If `Q < 1`, it defaults to `length(data) / 5`.
+- `data::AbstractVector{T}`: A collection of points, where each point is a vector of real numbers.
+- `Q::Int` (optional): The number of partitions (folds) for multi-threaded computations of the k-d trees. If `Q < 1`, it defaults to `length(data) / 5`.
 
 # Returns
-- A `DistanceFunction` object representing the median-of-means distance function, utilizing k-d trees for efficient nearest-neighbor searches.
+- A `DistanceFunction` object representing the k-d trees utilizing the median-of-means distance function for efficient searches.
 
 # Description
 This function partitions the dataset into `Q` folds, shuffles the data, and constructs a `KDTree` for each fold. The k-d trees facilitate efficient nearest-neighbor queries for robust distance estimation. If `Q` is not provided or invalid, it defaults to `n_obs / 5`.
@@ -174,10 +174,8 @@ Computes the Median of Means (MoM) distance metric in parallel using multiple wo
 
 # Description
 This function partitions the dataset `X` into `m` folds (where `m` is the number of available worker 
-processes), builds a tree structure for each partition in parallel using `pmap`, and returns a 
-distance function object. The Median of Means (MoM) method enhances robustness by splitting the dataset 
-into multiple groups, computing the mean within each, and using the median of these means to reduce the 
-impact of outliers.
+processes), builds a tree structure for each partition using the median-of-means distance function in parallel using `pmap`, and returns a 
+distance function object.
 
 # Example
 ```julia
@@ -215,7 +213,7 @@ end
 """
     fit(x::AbstractVecOrMat, D::DistanceFunction)
 
-Computes the median of k-nearest neighbor distances for a given dataset using a precomputed distance function.
+Computes the median of k-nearest neighbor distances for a given dataset using a precomputed distance function. This function is called after one of the distance functions above are called and return a `DistanceFunction` object.
 
 # Arguments
 - `x::AbstractVecOrMat`: The input data points for which distances are computed.
@@ -232,7 +230,6 @@ This function computes k-nearest neighbor distances for each data point in `x` u
 x = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
 D = dist(x)  # Assume `dist` function constructs a DistanceFunction
 fit_values = fit(x, D)
-println(fit_values)
 ```
 """
 function fit(
