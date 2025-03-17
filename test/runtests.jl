@@ -2,6 +2,7 @@ using RobustTDA
 import RobustTDA as rtda
 using Ripserer, KernelFunctions
 using Test
+using Distributed
 
 # Signal from a circle with noise
 n, m = 500, 100
@@ -73,7 +74,7 @@ end
         δ=0.01
     )
     m̂ = rtda.lepski(Xn=Xn, params=θ)
-    @test m/10 <= m̂ <= m+n
+    @test m / 10 <= m̂ <= m + n
 end
 
 @testset "RobustKDist" begin
@@ -87,7 +88,7 @@ end
 end
 
 @testset "kPDTM" begin
-    q, k, sig = 40, round(Int, N/2), round(Int, N/2)
+    q, k, sig = 40, round(Int, N / 2), round(Int, N / 2)
     Xn .= map(x -> [x...; 0.0], Xn)
     iter_max, nstart = 100, 2
     kPDTM_values, centers, _, _, colors, cost = rtda.kPDTM(Xn, Xn, q, k, sig, iter_max, nstart)
@@ -97,4 +98,25 @@ end
     @test typeof(cost) == Float64
     @test cost >= 0
     @test sum(colors .== -1) > 0
+end
+
+@testset "Parallel Functions" begin
+    n, m = 500, 100
+    N = n + m
+    signal = 2 .* rtda.randCircle(n, sigma=0.05)
+    noise = rtda.randMClust(m, a=1, b=1, λ_parent=2, λ_child=100, r=0.1)
+    X = [signal; noise]
+    Xn = [[x...] for x in Tuple.(eachrow(X))]
+    @test length(Xn) == 600
+
+    addprocs(4)
+    @test nworkers() == 4
+    @everywhere using RobustTDA
+
+    df = parallel_momdist(Xn)
+    @test typeof(df) == RobustTDA.DistanceFunction
+    res = parallel_fit(Xn, df)
+    @test length(res) == 600
+    rmprocs(workers())
+    @test nworkers() == 1
 end
